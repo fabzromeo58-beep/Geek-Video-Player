@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">GeekVPlayer</string>
+    <string name="logo_description">GeekVPlayer logo</string>
+    <string name="open_video">Open videos</string>
+    <string name="tagline">Your videos. A lighter player.</string>
+    <string name="library">Recently opened</string>
+    <string name="empty_title">Make room for movie time</string>
+    <string name="empty_body">Open a video from your phone or SD card. It stays on your device, and your place is saved.</string>
+    <string name="low_memory">Low-memory mode</string>
+    <string name="low_memory_description">Smaller playback buffer. Best for local videos.</string>
+    <string name="privacy">OFFLINE · NO ADS · NO ACCOUNT</string>
+    <string name="clear">Clear history</string>
+    <string name="clear_message">Remove recent videos and saved positions? Your video files will not be deleted.</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove">Remove from history</string>
+    <string name="open_error">Could not open the video picker.</string>
+    <string name="video_error">This video could not be played. Its format may not be supported by your phone, or the file may have moved. Try opening it again.</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+    <string name="fit">Fit</string>
+    <string name="fill">Fill</string>
+    <string name="rotate">Rotate</string>
+    <string name="subtitle">Subtitle</string>
+    <string name="subtitle_error">Could not open subtitles. Choose an SRT or WebVTT file.</string>
+    <string name="subtitle_added">Subtitles added</string>
+    <string name="playback_speed">Playback speed</string>
+    <string name="video">Video</string>
+    <string name="resume_at">Resume at %1$s</string>
+    <string name="ready_to_play">Ready to play</string>
+    <string name="loading">Opening videos…</string>
+</resources>
