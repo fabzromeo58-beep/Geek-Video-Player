@@ -21,6 +21,9 @@
     <string name="fill">Fill</string>
     <string name="rotate">Rotate</string>
     <string name="subtitle">Subtitle</string>
+    <string name="add_srt">Add SubRip (.srt)</string>
+    <string name="add_vtt">Add WebVTT (.vtt)</string>
+    <string name="remove_subtitle">Remove external subtitles</string>
     <string name="subtitle_error">Could not open subtitles. Choose an SRT or WebVTT file.</string>
     <string name="subtitle_added">Subtitles added</string>
     <string name="playback_speed">Playback speed</string>
@@ -29,3 +32,4 @@
     <string name="ready_to_play">Ready to play</string>
     <string name="loading">Opening videos…</string>
 </resources>
+

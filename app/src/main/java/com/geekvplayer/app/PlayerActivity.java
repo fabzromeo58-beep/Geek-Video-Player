@@ -26,13 +26,14 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 import java.util.Collections;
 
-@UnstableApi
+@androidx.annotation.OptIn(markerClass = UnstableApi.class)
 public final class PlayerActivity extends Activity {
     private static final int OPEN_SUBTITLE = 20;
     private ExoPlayer player;
     private PlayerView playerView;
     private Uri videoUri, subtitleUri;
     private String title, subtitleMime = "application/x-subrip";
+    private String pendingSubtitleMime = "application/x-subrip";
     private HistoryStore history;
     private long position;
     private long duration;
@@ -65,6 +66,7 @@ public final class PlayerActivity extends Activity {
             String subtitle = state.getString("subtitle");
             if (subtitle != null) subtitleUri = Uri.parse(subtitle);
             subtitleMime = state.getString("subtitle_mime", subtitleMime);
+            pendingSubtitleMime = state.getString("pending_subtitle_mime", pendingSubtitleMime);
         }
         setContentView(R.layout.player);
         Ui.applyInsets(this, findViewById(R.id.player_root));
@@ -84,9 +86,16 @@ public final class PlayerActivity extends Activity {
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
                         ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE));
         findViewById(R.id.subtitle).setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
-            try { startActivityForResult(intent, OPEN_SUBTITLE); }
-            catch (android.content.ActivityNotFoundException e) { Toast.makeText(this, R.string.subtitle_error, Toast.LENGTH_LONG).show(); }
+            new android.app.AlertDialog.Builder(this).setTitle(R.string.subtitle)
+                    .setItems(new String[]{getString(R.string.add_srt), getString(R.string.add_vtt), getString(R.string.remove_subtitle)}, (dialog, choice) -> {
+                        if (choice == 2) {
+                            releasePlayer(); subtitleUri = null; initializePlayer(); return;
+                        }
+                        pendingSubtitleMime = choice == 1 ? "text/vtt" : "application/x-subrip";
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
+                        try { startActivityForResult(intent, OPEN_SUBTITLE); }
+                        catch (android.content.ActivityNotFoundException e) { Toast.makeText(this, R.string.subtitle_error, Toast.LENGTH_LONG).show(); }
+                    }).setNegativeButton(R.string.cancel, null).show();
         });
         findViewById(R.id.retry).setOnClickListener(v -> {
             if (player != null) { showError(false); player.prepare(); player.play(); }
@@ -147,7 +156,7 @@ public final class PlayerActivity extends Activity {
         if (currentDuration > 0) duration = currentDuration;
         position = PlaybackPolicy.resumePosition(player.getCurrentPosition(), duration);
         speed = player.getPlaybackParameters().speed;
-        playWhenReady = player.getPlayWhenReady();
+        playWhenReady = player.getPlayWhenReady() && player.getPlaybackState() != Player.STATE_ENDED;
         history.save(new HistoryStore.Entry(videoUri.toString(), title, position, duration));
     }
 
@@ -168,6 +177,7 @@ public final class PlayerActivity extends Activity {
         state.putBoolean("playing", playWhenReady); state.putFloat("speed", speed); state.putBoolean("zoom", zoom);
         if (subtitleUri != null) state.putString("subtitle", subtitleUri.toString());
         state.putString("subtitle_mime", subtitleMime);
+        state.putString("pending_subtitle_mime", pendingSubtitleMime);
         super.onSaveInstanceState(state);
     }
 
@@ -176,13 +186,10 @@ public final class PlayerActivity extends Activity {
         if (request != OPEN_SUBTITLE || result != RESULT_OK || data == null || data.getData() == null) return;
         Uri selected = data.getData();
         if (!"content".equals(selected.getScheme())) return;
-        // Ask explicitly because many file providers report both formats as text/plain.
-        new android.app.AlertDialog.Builder(this).setTitle(R.string.subtitle)
-                .setItems(new String[]{"SubRip (.srt)", "WebVTT (.vtt)", "Remove external subtitles"}, (dialog, choice) -> {
-                    releasePlayer();
-                    subtitleUri = choice == 2 ? null : selected;
-                    subtitleMime = choice == 1 ? "text/vtt" : "application/x-subrip";
-                    initializePlayer();
-                }).setNegativeButton(R.string.cancel, null).show();
+        releasePlayer();
+        subtitleUri = selected;
+        subtitleMime = pendingSubtitleMime;
+        // onResume rebuilds the player after the picker returns, retaining the position.
     }
 }
+

@@ -8,7 +8,7 @@ A lightweight native Android video player built for local videos and modest phon
 - Open one or multiple videos from phone storage or SD cards using Android's document picker.
 - Recent history (up to 50 videos), resume playback, and remove/clear history without deleting files.
 - Play/pause, seek bar, 10-second seeking, playback speed and embedded audio/subtitle track selection through Media3 controls. Tap the video to show controls; the gear opens speed/audio settings.
-- External SRT and WebVTT subtitles: tap Subtitle, select a file, then select its format.
+- External SRT and WebVTT subtitles: tap Subtitle, choose a format, then select a file. The same menu can remove external subtitles.
 - Fit/fill, portrait/landscape rotation, audio focus, and pause when headphones disconnect.
 - Open with GeekVPlayer from another app that shares a video content URI.
 - Offline: no Internet permission, ads, analytics, login, or broad storage permission.
@@ -44,3 +44,4 @@ CI runs unit tests for resume/formatting edge cases, Android lint, and both APK 
 History and positions stay in app-private preferences; backup is disabled. Selected videos are never copied into app storage. Android URI grants are released when their history entries are removed or evicted. External subtitles apply to the current playback session. No network streaming, PiP, background audio, folder scanning, or playlist auto-advance is included in this first version.
 
 Implementation references: [Media3 player lifecycle](https://developer.android.com/media/media3/exoplayer/hello-world), [PlayerView and SurfaceView](https://developer.android.com/media/media3/ui/playerview), [AGP 8.9 compatibility](https://developer.android.com/build/releases/agp-8-9-0-release-notes).
+
